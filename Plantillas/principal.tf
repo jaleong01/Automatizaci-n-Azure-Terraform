@@ -5,9 +5,9 @@
 
 terraform {
   backend "azurerm" {
-    resource_group_name = "foc24" #estos codigo ( resource_group_name, storage_account_name y container_name) 
-    storage_account_name = "storageiesgn" # hay que crearlos antes de hacer el código
-    container_name = "contenedoriesgn1" 
+    resource_group_name = "Grupojalg" #estos codigo ( resource_group_name, storage_account_name y container_name) 
+    storage_account_name = "almacenamientojalg" # hay que crearlos antes de hacer el código
+    container_name = "contenedorjose" 
     key = "terraform.tfstate"  # fichero  configuración que se va a crear 
     }
 }
