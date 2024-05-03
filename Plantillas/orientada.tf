@@ -2,13 +2,13 @@
 
 variable StorageAccountName {
     type = string
-    default = "storage01" 
+    default = "almacenamiento1" 
     description= "Nombre para la cuenta de almacenamiento"  
 }
 
 variable ResourceGroupName {
     type = string 
-    default = "my-terraform-rg" 
+    default = "mi-grupo-terraform" 
     description= "Nombre del grupo de recursos"  
 }
 
@@ -28,13 +28,13 @@ variable AzurermVirtualNetworkName {
 
 variable usuario {
     type = string 
-    default = "alfonso" # usuario de la maquina virtual
+    default = "jose" # usuario de la maquina virtual
     sensitive = true 
 }
 
 variable contrasena {
     type = string 
-    default = "Usuario1!" # contraseña de la maquina virtual
+    default = "F0m3nt0" # contraseña de la maquina virtual
     sensitive = true
 }
 
@@ -50,7 +50,7 @@ variable ip_privada {
 
 variable size {
     type = string
-    default = "Standard_DS1_v2"
+    default = "Standard_DS3_v2"
 }
 
 # Variables httpd
