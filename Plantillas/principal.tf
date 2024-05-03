@@ -14,12 +14,12 @@ terraform {
 
 # Seleccionar el Azure Provider y la versión que usará
 terraform {
-  required_version = ">= 0.14" # se actualiza constantemente, varias veces al mes, hay que mirar que esté correcta, puede dar problemas
+  required_version = ">= 1.8.2" # se actualiza constantemente, varias veces al mes, hay que mirar que esté correcta, puede dar problemas
 
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.1.0"
+      version = "~> 3.0.0"
     }
   }
 }
