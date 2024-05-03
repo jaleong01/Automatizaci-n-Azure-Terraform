@@ -62,5 +62,5 @@ variable puerto_expuesto {
 
 variable salida_echo {
   type = string
-  default = "Hola mundo"
+  default = "Vas por buen camino Jose"
 }
