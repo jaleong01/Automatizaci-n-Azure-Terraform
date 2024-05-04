@@ -12,9 +12,9 @@ terraform {
     }
 }
 
-# Seleccionar el Azure Provider y la versión que usará
+# Se selecciona Azure Provider y la versión que usará
 terraform {
-  required_version = ">= 1.8.2" # se actualiza constantemente, varias veces al mes, hay que mirar que esté correcta, puede dar problemas
+  required_version = ">= 1.8.2" # se actualiza constantemente, varias veces al mes, hay que mirar que esté correcta, puede dar problemas (esta linea se podría quitar)
 
   required_providers {
     azurerm = {
@@ -24,32 +24,32 @@ terraform {
   }
 }
 
-# Configurar Microsoft Azure provider
-provider "azurerm" {
+# Se configura Microsoft Azure provider
+provider "azurerm" { # si no se tiene permisos para registrar proveedores en azure, insertar "linea skip_provider_registration = true" entre provider y features
   features {}
 }
 
-# Crear grupo de recursos en caso de que no exista. La variable se hace con var. y el grupo de recurso, haciendo referencia al fichero variable.tf
+# Se crea un grupo de recursos en caso de que no exista. La variable se hace con var. mas el grupo de recurso, haciendo referencia al fichero variable.tf
 resource "azurerm_resource_group" "az_rg" {
-  name     = var.ResourceGroupName
-  location = var.ResourceGroupLocation
+  name     = var.ResourceGroupName  # apunta a la variable del archivo orientada.tf donde el nombre es mi-grupo-terraform
+  location = var.ResourceGroupLocation # apunta a la variable del archivo orientada.tf donde la localización del grupo de recursos es oeste de europa
 }
 
-# Se crea una red virtual
+# Se crea la red virtual
 resource "azurerm_virtual_network" "az_vnet" {
   name                = var.AzurermVirtualNetworkName
-  location            = azurerm_resource_group.az_rg.location
   resource_group_name = azurerm_resource_group.az_rg.name
+  location            = azurerm_resource_group.az_rg.location
   address_space       = ["10.0.0.0/16"]
 
   tags = {
-    environment = "my-terraform-env"
+    environment = "Grupojalg-env" # esto es el entorno, con el nombre predefinido
   }
 }
 
 # Se crea una subred virtual
 resource "azurerm_subnet" "az_subnet" {
-  name                 = "my-terraform-subnet"
+  name                 = "Grupojalg-subnet"
   resource_group_name  = azurerm_resource_group.az_rg.name
   virtual_network_name = azurerm_virtual_network.az_vnet.name
   address_prefixes     = ["10.0.2.0/24"]
@@ -57,32 +57,32 @@ resource "azurerm_subnet" "az_subnet" {
 
 # Se crea una ip publica
 resource "azurerm_public_ip" "az_public_ip" {
-  name                = "my-terraform-public-ip"
+  name                = "Grupojalg-public-ip"
   location            = azurerm_resource_group.az_rg.location
   resource_group_name = azurerm_resource_group.az_rg.name
   allocation_method   = "Static"
 
   tags = {
-    environment = "my-terraform-env"
+    environment = "Grupojalg-env"
   }
 }
 
 # Se crean las reglas y los grupos de seguridad por http , localhost 8080 ( variable vamos a ejecutar  linea 182 "vas por buen camino jose" ) y ssh
 resource "azurerm_network_security_group" "az_net_sec_group" {
-  name                = "my-terraform-nsg"
+  name                = "Grupojalg-nsg"
   location            = azurerm_resource_group.az_rg.location
   resource_group_name = azurerm_resource_group.az_rg.name
 
   security_rule {
-    name                       = "HTTP"
-    priority                   = 1002
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
+    name                       = "HTTP" # nombre de la regla de seguridad
+    priority                   = 1002  # tipo prioridad cuanto mas cerca al 100 más restrictiva, cuanto más alejada menos prioriza
+    direction                  = "Inbound" # dirección entrante
+    access                     = "Allow" # con permiso de acceso
+    protocol                   = "Tcp" # tipo de protocolo en este caso tcp 
+    source_port_range          = "*" # el asterisco indica que no se establece un rango en el puerto de origen
+    destination_port_range     = "80" # el puerto de destino es el 80
+    source_address_prefix      = "*" # el asterisco indica que no hay intervalo en el prefijo de la direccion de origen 
+    destination_address_prefix = "*" # el asterisco indica que no hay intervalo en el prefijo de la direccion de destino
   }
 
   security_rule {
@@ -92,7 +92,7 @@ resource "azurerm_network_security_group" "az_net_sec_group" {
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "${var.puerto_expuesto}"
+    destination_port_range     = "${var.puerto_expuesto}" # con este parametro se indica que le dejas el puerto del nombre (8080) expuesto para su uso, por donde orientara y saldra el mensaje
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
@@ -110,18 +110,18 @@ resource "azurerm_network_security_group" "az_net_sec_group" {
   }
 
   tags = {
-    environment = "my-terraform-env"
+    environment = "Grupojalg-env"
   }
 }
 
-# Crear Network Interface
+# Se crea el interfaz de red
 resource "azurerm_network_interface" "az_net_int" {
-  name                = "my-terraform-nic"
+  name                = "Grupojalg-nic"
   location            = azurerm_resource_group.az_rg.location
   resource_group_name = azurerm_resource_group.az_rg.name
 
   ip_configuration {
-    name                          = "my-terraform-nic-ip-config"
+    name                          = "Grupojalg-nic-ip-config"
     subnet_id                     = azurerm_subnet.az_subnet.id
     private_ip_address_allocation = "Static"
     private_ip_address            = "${var.ip_privada}"
@@ -129,11 +129,11 @@ resource "azurerm_network_interface" "az_net_int" {
   }
 
   tags = {
-    environment = "my-terraform-env"
+    environment = "Grupojalg-env"
   }
 }
 
-# Crear Network Interface Security Group association
+# Se crea la asociacion de grupo de seguridad del recurso anterior (interfaz de red)
 resource "azurerm_network_interface_security_group_association" "az_net_int_sec_group" {
   network_interface_id      = azurerm_network_interface.az_net_int.id
   network_security_group_id = azurerm_network_security_group.az_net_sec_group.id
@@ -141,7 +141,7 @@ resource "azurerm_network_interface_security_group_association" "az_net_int_sec_
 
 # Crear máquina virtual
 resource "azurerm_linux_virtual_machine" "az_linux_vm" {
-  name                            = "my-terraform-vm"
+  name                            = "Grupojalg-maquina"
   location                        = azurerm_resource_group.az_rg.location
   resource_group_name             = azurerm_resource_group.az_rg.name
   network_interface_ids           = [azurerm_network_interface.az_net_int.id]
@@ -151,21 +151,21 @@ resource "azurerm_linux_virtual_machine" "az_linux_vm" {
   admin_password                  = "${var.contrasena}"
   disable_password_authentication = false
 
-  source_image_reference {
+  source_image_reference {  # fuente de la imagen de referencia 
     publisher = "Canonical"
     offer     = "UbuntuServer"
-    sku       = "18.04-LTS"
+    sku       = "20.04-LTS"
     version   = "latest"
   }
 
-  os_disk {
-    name                 = "my-terraform-os-disk"
+  os_disk {  # se crea disco del sistema operativo
+    name                 = "Grupojalg-os-disk"
     storage_account_type = "Standard_LRS"
     caching              = "ReadWrite"
   }
   
   tags = {
-    environment = "my-terraform-env"
+    environment = "Grupojalg-env"
   }
 }
 
@@ -178,24 +178,27 @@ resource "azurerm_virtual_machine_extension" "az_vm_extension" {
   type                 = "CustomScript"
   type_handler_version = "2.1"
 
+# Se crean ajustes y aquí se le esta diciendo que haga el echo de la salida de la variable 
+# en el fichero orientada.tf y arroje por el puerto expuesto 8080 el mensaje que pongamos
+
   settings = <<SETTINGS
     {
-      "commandToExecute": "echo '${var.salida_echo}' > index.html ; nohup busybox httpd -f -p ${var.puerto_expuesto} &"
+      "commandToExecute": "echo '${var.salida_echo}' > index.html ; nohup busybox httpd -f -p ${var.puerto_expuesto} &" 
     }
-  SETTINGS
+  SETTINGS 
 
   tags = {
-    environment = "my-terraform-env"
+    environment = "Grupojalg-env"
   }
 }
 
-# Fuente de datos para acceder a las propiedades de una dirección IP pública de Azure existente.
+# Es la fuente de datos para acceder a las propiedades de una dirección IP pública de Azure existente.
 data "azurerm_public_ip" "az_public_ip" { #asociacion de la ip publica con la maquina con el grupo de recursos
   name                = azurerm_public_ip.az_public_ip.name
   resource_group_name = azurerm_linux_virtual_machine.az_linux_vm.resource_group_name
 }
 
-# Variable de salida: Dirección de IP pública output de la ip, para que cuando termine la ejecucion de la pipeline se muestre por pantalla la ip publica, por si se va a ejecutar en local desde terraform, no es necesario
+# Es la variable de salida: Dirección de IP pública output de la ip, para que cuando termine la ejecucion de la pipeline se muestre por pantalla la ip publica, por si se va a ejecutar en local desde terraform, no es necesario
 output "public_ip" {
   value = data.azurerm_public_ip.az_public_ip.ip_address
 }
