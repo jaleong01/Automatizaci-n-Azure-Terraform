@@ -1,14 +1,14 @@
-#En este fichero se declaran las variables indicando tipo (type) cadena (string) que sería el nombre de la variable y una descripción
+#En este fichero se declaran las variables indicando tipo (type) cadena (string) que sería el nombre de la variable con comando default y una descripción
 
 variable StorageAccountName {
     type = string
-    default = "almacenamiento1" 
+    default = "almacenamientojalg" 
     description= "Nombre para la cuenta de almacenamiento"  
 }
 
 variable ResourceGroupName {
     type = string 
-    default = "mi-grupo-terraform" 
+    default = "Grupojalg" 
     description= "Nombre del grupo de recursos"  
 }
 
@@ -20,11 +20,11 @@ variable ResourceGroupLocation {
 
 variable AzurermVirtualNetworkName {
     type = string
-    default = "my-terraform-vnet"
+    default = "Grupojalg-vnet"
     description= "Nombre para la red virtual de Azure"  
 }
 
-# Configuración VM , parametro sensitive, no se muestre por pantalla las credenciales del usuario y contraseña en la ejecución de la pipeline
+# Se configura de la maquina virtual
 
 variable usuario {
     type = string 
@@ -34,23 +34,23 @@ variable usuario {
 
 variable contrasena {
     type = string 
-    default = "F0m3nt0" # contraseña de la maquina virtual
-    sensitive = true
+    default = "F0m3nt0josefoc" # contraseña de la maquina virtual
+    sensitive = true # este parametro, no se muestre por pantalla las credenciales del usuario y contraseña en la ejecución de la pipeline
 }
 
 variable hostname {
     type = string 
-    default = "myvm" 
+    default = "maquina" 
 }
 
 variable ip_privada {
   type = string
-  default = "10.0.2.5"
+  default = "10.1.1.4"
 }
 
 variable size {
     type = string
-    default = "Standard_DS3_v2"
+    default = "Standard_d2_v2" # si no funciona esta version de tamaño, modificar por Standard_B1s tiene gratuitas hasta 750 horas
 }
 
 # Variables httpd
