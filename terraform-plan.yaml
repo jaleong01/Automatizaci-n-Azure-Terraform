@@ -1,0 +1,57 @@
+# Da inicio a la pipeline
+#  Empieza con una pequeña pipeline que puede construir y destruir tu codigo
+#   Se añaden pasos que construir, iniciar tests, destrucciones y mas, mas informacion en la siguiente pagina:
+# https://aka.ms/yaml 
+
+name: "plan"
+
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: TerraformInstaller@0
+  displayName: "Install Terraform"
+  inputs:
+    terraformVersion: '1.4.6'
+    terraformDownloadLocation: 'https://releases.hashicorp.com/terraform'
+
+- task: TerraformTaskV4@4
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    backendServiceArm: 'Azure for Students(23dd767a-27e3-434a-883f-5cef612f88fe)'
+    backendAzureRmResourceGroupName: 'Grupojalg'
+    backendAzureRmStorageAccountName: 'almacenamientojalg'
+    backendAzureRmContainerName: 'contenedorjose'
+    backendAzureRmKey: 'tf/terraform.tfstate'
+
+- task: TerraformTaskV4@4
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/Templates'
+    commandOptions: '-out=terraform.tfplan'
+    environmentServiceNameAzureRM: 'Azure for Students(23dd767a-27e3-434a-883f-5cef612f88fe)'
+  displayName: 'Terraform Plan'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.SourcesDirectory)/Templates/terraform.tfplan'
+    artifactName: 'terraformPlan'
+    publishLocation: 'Container'
+  displayName: 'Publish Terraform plan'
+
+- script: echo Vamos jose, que ya casi lo tienes!
+  displayName: 'Run a one-line script'
+
+# - script: |
+#    echo Add other tasks to build, test, and deploy your project.
+#    echo See https://aka.ms/yaml
+# displayName: 'Run a multi-line script'
+# Aún teniendo todo bien aparecia el siguiente error hay que irse aquí para auditarse, ya que si no es de pago
+# y rellenar el formulario en el siguiente enlace https://aka.ms/azpipelines-parallelism-request
