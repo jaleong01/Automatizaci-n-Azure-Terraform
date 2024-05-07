@@ -1,0 +1,25 @@
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: TerraformTaskV4@4
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/Templates'
+    backendServiceArm: 'Azure for Students(23dd767a-27e3-434a-883f-5cef612f88fe)'
+    backendAzureRmResourceGroupName: 'Grupojalg'
+    backendAzureRmStorageAccountName: 'almacenamientojalg'
+    backendAzureRmContainerName: 'contenedorjose'
+    backendAzureRmKey: 'terraform.tfstate'
+  displayName: 'Terraform Init'
+- task: TerraformTaskV4@4
+  inputs:
+    provider: 'azurerm'
+    command: 'destroy'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/Templates'
+    commandOptions: '--auto-approve'
+    environmentServiceNameAzureRM: 'Azure for Students(23dd767a-27e3-434a-883f-5cef612f88fe)'
+  displayName: 'Terraform Destroy'
