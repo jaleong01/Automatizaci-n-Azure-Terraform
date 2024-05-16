@@ -1,39 +1,12 @@
-# Se procede a crear la infraestructura de Terraform. Se empieza por un bloque automatizado (backend). 
+# Se procede a crear la infraestructura de Terraform. Se empieza por un bloque automatizado (backend), traspasado al archivo providers.tf. 
 # El fichero de configuración tfstate almacenará los metadatos para crear un entorno. 
 # Este entorno  se creara, modificara, actualizara y tambien cabe la posibilidad de orientarlo a destruirlo.
 # Si no existe tfstate, Terraform intentará recrear toda la configuración en lugar de actualizarla.
 
-terraform {
-  backend "azurerm" {
-    resource_group_name = "Grupojalg" # Estos parametros en azure ( resource_group_name, storage_account_name y container_name) 
-    storage_account_name = "almacenamientojalg" # hay que crearlos antes de hacer el código, por que induce conflicto
-    container_name = "contenedorjose" 
-    key = "terraform.tfstate"  # fichero  configuración que se va a crear 
-    }
-}
-
-# Se selecciona Azure Provider y la versión que usará
-terraform {
-  required_version = ">= 1.7.5" # se actualiza constantemente, varias veces al mes, hay que mirar que esté correcta, puede dar problemas, versiones gratis haciendo pruebas he llegado a esta.
-
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm" # fuente de proveedor de terraform y su version
-      version = "~> 2.99.0"    
-    }
-  }
-}
-
-# Se configura Microsoft Azure provider
-provider "azurerm" { # si no se tiene permisos para registrar proveedores en azure, insertar "linea skip_provider_registration = true" o dar roles en el grupo
-  skip_provider_registration = true  # si da error esta linea quitar por problemas de registro skip_provider_registration = true 
-  features {}
-}
-
-# Se crea un grupo de recursos en caso de que no exista. La variable se hace con archivo var. + el grupo de recurso, haciendo referencia al fichero variable.tf
+# Se crea un grupo de recursos en caso de que no exista. La variable se hace con archivo var. + el grupo de recurso, haciendo referencia al fichero variables.tf
 resource "azurerm_resource_group" "az_rg" {
-  name     = var.ResourceGroupName  # apunta a la variable del archivo variable.tf donde el nombre es "Grupojalg"
-  location = var.ResourceGroupLocation # apunta a la variable del archivo variable.tf donde la localización del grupo de recursos es "West Europe"
+  name     = var.ResourceGroupName  # apunta a la variable del archivo variables.tf donde el nombre es "Grupojalg"
+  location = var.ResourceGroupLocation # apunta a la variable del archivo variables.tf donde la localización del grupo de recursos es "West Europe"
 }
 
 # Se crea la red virtual
@@ -182,9 +155,9 @@ resource "azurerm_virtual_machine_extension" "az_vm_extension" {
   type_handler_version = "2.1"
 
 # Se crean ajustes y aquí se le esta diciendo que haga el echo de la salida de la variable 
-# en el fichero variable.tf y arroje por el puerto expuesto 8080 el mensaje que pongamos
+# en el fichero variables.tf y arroje por el puerto expuesto 8080 el mensaje que pongamos
 
-  settings = <<SETTINGS
+  settings = <SETTINGS
     {
       "commandToExecute": "echo '${var.salida_echo}' > index.html ; nohup busybox httpd -f -p ${var.puerto_expuesto} &" 
     }
@@ -195,13 +168,15 @@ resource "azurerm_virtual_machine_extension" "az_vm_extension" {
   }
 }
 
-# Es la fuente de datos para acceder a las propiedades de una dirección IP pública de Azure existente.
+# Es la fuente de datos por la cual se accede a las características de la IP pública de Azure.
+
 data "azurerm_public_ip" "az_public_ip" { #asociacion de la ip publica con la maquina con el grupo de recursos
   name                = azurerm_public_ip.az_public_ip.name
   resource_group_name = azurerm_linux_virtual_machine.az_linux_vm.resource_group_name
 }
 
 # Es la variable de salida: Dirección de IP pública output de la ip, para que cuando termine la ejecucion de la pipeline se muestre por pantalla la ip publica, por si se va a ejecutar en local desde terraform, no es necesario
+
 output "public_ip" {
   value = data.azurerm_public_ip.az_public_ip.ip_address
 }
