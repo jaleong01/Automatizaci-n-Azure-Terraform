@@ -3,7 +3,7 @@
 variable StorageAccountName {
     type = string
     default = "almacenamientojalg" 
-    description= "Nombre para la cuenta de almacenamiento"  
+    description= "Nombre cuenta de almacenamiento"  
 }
 
 variable ResourceGroupName {
@@ -15,13 +15,13 @@ variable ResourceGroupName {
 variable ResourceGroupLocation {
     type = string 
     default = "West Europe" 
-    description= "Región geográfica donde reside el grupo de recursos"  
+    description= "Región geográfica del grupo de recursos"  
 }
 
 variable AzurermVirtualNetworkName {
     type = string
     default = "Grupojalg-vnet"
-    description= "Nombre para la red virtual de Azure"  
+    description= "Nombre red virtual de Azure"  
 }
 
 # Se configura de la maquina virtual
