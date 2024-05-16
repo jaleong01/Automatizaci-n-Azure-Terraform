@@ -1,25 +1,25 @@
 steps:
-- task: TerraformTaskV4@4
+- task: TerraformTaskV4@4 # inicio tarea comando terraform con proveedor azure
   inputs:
     provider: 'azurerm'
-    command: 'apply'
+    command: 'apply' # comando que inicia la aplicacion
     workingDirectory: '$(System.DefaultWorkingDirectory)/Templates'
-    commandOptions: '--auto-approve'
+    commandOptions: '--auto-approve' # automático sin necesidad de preguntar
     environmentServiceNameAzureRM: 'Azure for Students(23dd767a-27e3-434a-883f-5cef612f88fe)'
-  displayName: 'Terraform Apply'
+  displayName: 'Terraform Apply' # mostrará una vez ejecutado el apply
 
 
-#- task: DownloadPipelineArtifact@2
+#- task: DownloadPipelineArtifact@2 # tarea para descargar artefacto
 #  displayName: 'Download Terraform Plan'
 #  inputs:
 #    buildType: specific
-#    buildVersionToDownload: 'latest'
-#    project: 'Proyecto Jose Leon - echo Vamos jose, que ya casi lo tienes' # replace with the name of your Azure DevOps Project
-#    definition: 'Proyecto Jose Leon - echo Vamos jose, que ya casi lo tienes!-CI'
-#    artifactName: 'TerraformPlan'
+#    buildVersionToDownload: 'latest' 
+#    project: 'Proyecto Jose Leon - echo Vamos jose, que lo tienes' # nombre de tu proyecto Azure DevOps 
+#    definition: 'Proyecto Jose Leon - echo Vamos jose, que lo tienes-CI'
+#    artifactName: 'Tizona'
 #    path: '$(Pipeline.Workspace)'
 
-#- script: |
+#- script: | # guión para descargar las importaciones de los recursos
 #    cd Templates
 #    terraform import azurerm_resource_group.az_rg /subscriptions/23dd767a-27e3-434a-883f-5cef612f88fe/resourceGroups/my-terraform-rg
 #    terraform import azurerm_virtual_network.az_vnet /subscriptions/23dd767a-27e3-434a-883f-5cef612f88fe/resourceGroups/my-terraform-rg/providers/Microsoft.Network/virtualNetworks/my-terraform-vnet
