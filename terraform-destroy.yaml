@@ -1,10 +1,10 @@
-trigger: none
+trigger: none # ningun gatillo
 
 pool:
-  vmImage: ubuntu-latest
+  name: local # la original si fuera la maquina virtual es vmImage: ubuntu-latest, al utilizar un agente auto-hospedado se usa name: local 
 
 steps:
-- task: TerraformTaskV4@4
+- task: TerraformTaskV4@4 # tarea inicio
   inputs:
     provider: 'azurerm'
     command: 'init'
@@ -15,11 +15,12 @@ steps:
     backendAzureRmContainerName: 'contenedorjose'
     backendAzureRmKey: 'terraform.tfstate'
   displayName: 'Terraform Init'
-- task: TerraformTaskV4@4
+
+- task: TerraformTaskV4@4 # indica comando tarea en este caso comando destroy
   inputs:
     provider: 'azurerm'
-    command: 'destroy'
+    command: 'destroy' # mediante este comando se inicia la destruccion de la pipeline
     workingDirectory: '$(System.DefaultWorkingDirectory)/Templates'
-    commandOptions: '--auto-approve'
+    commandOptions: '--auto-approve' # automatica sin preguntar si se quiere realizar
     environmentServiceNameAzureRM: 'Azure for Students(23dd767a-27e3-434a-883f-5cef612f88fe)'
-  displayName: 'Terraform Destroy'
+  displayName: 'Terraform Destroy' # mostrara esto en pantalla
